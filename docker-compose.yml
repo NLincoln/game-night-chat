@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  ingress:
+    ports:
+      - "4000:80"
+    build:
+      context: ./ingress
+      dockerfile: Dockerfile
+    links:
+      - frontend
+      - graphql
+    restart: always
+  graphql:
+    build:
+      context: ./graphql
+      dockerfile: Dockerfile
+    ports:
+      - "9002:9229"
+    volumes:
+      - "./graphql:/app"
+    restart: always
+    links:
+      - rethinkdb
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - "./frontend:/app"
+
+  rethinkdb:
+    image: rethinkdb:2.3
+    volumes:
+    - "db:/data"
+
+volumes:
+  db:
